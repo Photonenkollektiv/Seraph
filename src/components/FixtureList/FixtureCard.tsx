@@ -1,6 +1,7 @@
 import { Accordion, AccordionDetails, AccordionSummary, Card, Checkbox, Divider, FormControlLabel, FormGroup, InputLabel, Stack, TextField, Typography } from "@mui/material";
 import { BaseFixture, StateTypes } from "../../engine/fixtures/BaseFixture";
 import { ExpandMore } from "@mui/icons-material";
+import { useState } from "react";
 
 export type FixtureCardProps = {
     fixture: BaseFixture,
@@ -9,7 +10,7 @@ export type FixtureCardProps = {
 
 export const FixtureCard = (props: FixtureCardProps) => {
     const { fixture, reRenderHook } = props;
-
+    const [fixtureName, setFixtureName] = useState<string>(fixture.fixtureName);
     const onDataPointChange = (key: string, value: StateTypes) => {
         fixture.setStateForKey(key, value);
         reRenderHook();
@@ -30,15 +31,28 @@ export const FixtureCard = (props: FixtureCardProps) => {
                     aria-controls="panel1a-content"
                     id="panel1a-header"
                 >
-                    <Typography variant="body1">{fixture.instanceName} <Typography variant="caption">- {fixture.fixtureName}</Typography></Typography>
+                    <Typography variant="body1">{fixtureName} <Typography variant="caption">- {fixture.fixtureName}</Typography></Typography>
                 </AccordionSummary>
+                <Divider/>
                 <AccordionDetails>
                     <Stack direction="column" spacing={2}>
+                        <InputLabel>
+                            Fixture Name
+                        </InputLabel>
+                        <TextField
+                            variant="standard"
+                            sx={{ paddingTop: 0,marginBottom: 2 }}
+                            onChange={(e) => {
+                                fixture.setInstanceName(e.target.value);
+                                setFixtureName(e.target.value);
+                            }}
+                            defaultValue={fixtureName}
+                        />
                         {fixture.getUISchema().map((uiElement) => {
                             switch (uiElement.type) {
                                 case "heading":
                                     return (<>
-                                        <Typography variant="body1">{uiElement.fieldLabel}</Typography>
+                                        <Typography sx={{paddingTop:2}} variant="body1">{uiElement.fieldLabel}</Typography>
                                         <Divider />
                                     </>)
                                 case "string":

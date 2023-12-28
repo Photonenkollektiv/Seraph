@@ -47,6 +47,12 @@ export const Editor = () => {
         reRenderHook();
     }, [])
 
+    const addNewFixture = () => {
+        setFixtures((fixtures) => {
+            return [...fixtures, new LineFixture()];
+        });
+    }
+
     return (
         <Box>
             <AppBar position="static">
@@ -56,13 +62,12 @@ export const Editor = () => {
                     </Typography>
                 </Toolbar>
             </AppBar>
-            <Button onClick={() => {
-                reRenderHook();
-            }
-            }>rE rENDER</Button>
             <Grid container>
                 <Grid item xs={4}>
                     <Typography variant="h6">
+                        <Box sx={{ paddingLeft: 2,paddingTop:1 }}>
+                            <Button onClick={() => addNewFixture()}>Add new Fixture</Button>
+                        </Box>
                         <FixtureList reRenderHook={reRenderHook} fixtures={fixtures} />
                     </Typography>
                 </Grid>
