@@ -5,38 +5,73 @@ interface Point {
     y: number;
 }
 
-function getPointsInDirection(start: Point, angle: number, distance: number): Point[] {
-    // Convert angle to radians
-    const angleInRadians = (angle * Math.PI) / 180;
+// function getPointsInDirection(start: Point, angle: number, distance: number): Point[] {
+//     // Convert angle to radians
+//     const angleInRadians = (angle * Math.PI) / 180;
 
-    // Calculate new point coordinates
-    const deltaX = distance * Math.cos(angleInRadians);
-    const deltaY = distance * Math.sin(angleInRadians);
+//     // Calculate new point coordinates
+//     const deltaX = distance * Math.cos(angleInRadians);
+//     const deltaY = distance * Math.sin(angleInRadians);
 
-    // Calculate the number of points along the direction
-    const numberOfPoints = Math.ceil(distance);
+//     // Calculate the number of points along the direction
+//     const numberOfPoints = Math.ceil(distance);
 
-    // Generate an array of points
-    const points: Point[] = [];
-    let allPointsFound = false;
-    let i = 0;
-    while (!allPointsFound) {
-        const x = start.x + i * (deltaX / numberOfPoints);
-        const y = start.y + i * (deltaY / numberOfPoints);
-        //check if last point is equal to the actual point
-        if (points.length > 0) {
-            const lastPoint = points[points.length - 1];
-            if (lastPoint.x === Math.round(x) && lastPoint.y === Math.round(y)) {
-                i++;
-                continue;
-            }
-        }
-        points.push({ x: Math.round(x), y:Math.round(y) });
-        i++;
-        if (points.length >= numberOfPoints) allPointsFound = true;
+//     // Generate an array of points
+//     const points: Point[] = [];
+//     let allPointsFound = false;
+//     let i = 0;
+//     while (!allPointsFound) {
+//         const x = start.x + i * (deltaX / numberOfPoints);
+//         const y = start.y + i * (deltaY / numberOfPoints);
+//         //check if last point is equal to the actual point
+//         if (points.length > 0) {
+//             const lastPoint = points[points.length - 1];
+//             if (lastPoint.x === Math.round(x) && lastPoint.y === Math.round(y)) {
+//                 i++;
+//                 continue;
+//             }
+//         }
+//         points.push({ x: Math.round(x), y:Math.round(y) });
+//         i++;
+//         if (points.length >= numberOfPoints) allPointsFound = true;
+//     }
+//     console.log(`Took ${i} iterations to find ${numberOfPoints} points`)
+//     return points;
+// }
+
+function getPointsInDirection(startpunkt: Point, winkel: number, anzahl: number): Point[] {
+    // const points: Point[] = [start];
+    // const { x, y } = start;
+    // let dy = anzahl * Math.cos(angle * Math.PI / 180);
+    // let dx = anzahl * Math.sin(angle * Math.PI / 180);
+    // const d = Math.max(Math.abs(dx), Math.abs(dy));
+    // dx = dx / d;
+    // dy = dy / d;
+
+    // for (let i = 1; i <= d; i++) {
+    //     points.push({ x: Math.round(x + i * dx), y: Math.round(y + i * dy) });
+    // }
+    // console.log(points);
+    // return points;
+    const punkte = [startpunkt];
+    let { x, y } = startpunkt;
+
+    // Stelle sicher, dass der Winkel zwischen 0 und 360 Grad liegt
+    winkel = winkel % 360;
+
+    let dx = anzahl * Math.cos(winkel * Math.PI / 180);
+    let dy = anzahl * Math.sin(winkel * Math.PI / 180);
+    const d = Math.max(Math.abs(dx), Math.abs(dy));
+    dx = dx / d;
+    dy = dy / d;
+
+    for (let i = 0; i < anzahl - 1; i++) {
+        x += dx;
+        y += dy;
+        punkte.push({ x: Math.round(x), y: Math.round(y) });
     }
-    console.log(`Took ${i} iterations to find ${numberOfPoints} points`)
-    return points;
+
+    return punkte;
 }
 
 

@@ -51,6 +51,7 @@ export const Editor = () => {
         setFixtures((fixtures) => {
             return [...fixtures, new LineFixture()];
         });
+        reRenderHook();
     }
 
     return (
