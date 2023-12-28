@@ -12,7 +12,7 @@ export const FixtureCard = (props: FixtureCardProps) => {
 
     const onDataPointChange = (key: string, value: StateTypes) => {
         fixture.setStateForKey(key, value);
-        // reRenderHook();
+        reRenderHook();
     }
 
     const getDataPoint = (key: string) => {

@@ -25,24 +25,27 @@ export const Editor = () => {
 
     const reRenderHook = _.debounce(() => {
         try {
-            console.log("Re-rendering")
-            console.log(fixtures);
+            console.group("2D Map Calculation")
+            console.log("Fixtures to use:", fixtures);
             const pixelMaps = fixtures.flatMap((fixture) => {
                 return fixture.getPixelMap();
             });
-            console.log("Maps: ", pixelMaps)
             const pixelData = pixelMapsToArray({
                 pixelMaps,
                 gridSizeX,
                 gridSizeY
             });
-            console.log(pixelData);
+            console.log("Calculated Array: ", pixelData);
+            console.groupEnd();
             setPixelData(pixelData);
-            console.log("Re-rendered")
         } catch (e) {
             console.error(e);
         }
-    }, 500)
+    }, 250)
+
+    useEffect(() => {
+        reRenderHook();
+    }, [])
 
     return (
         <Box>
