@@ -60,7 +60,7 @@ export const FixtureCard = (props: FixtureCardProps) => {
                                         </InputLabel>
                                         <TextField
                                             variant="standard"
-                                            onChange={(e) => onDataPointChange(uiElement.fieldStateName, e.target.value)}
+                                            onChange={(e) => onDataPointChange(uiElement.fieldStateName, parseInt(e.target.value))}
                                             defaultValue={getDataPoint(uiElement.fieldStateName)}
                                             type="number"
                                         />

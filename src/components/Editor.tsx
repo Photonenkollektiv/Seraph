@@ -54,7 +54,7 @@ export const Editor = () => {
                 </Toolbar>
             </AppBar>
             <Button onClick={() => {
-                setPixelData(reRenderHook);
+                reRenderHook();
             }
             }>rE rENDER</Button>
             <Grid container>
