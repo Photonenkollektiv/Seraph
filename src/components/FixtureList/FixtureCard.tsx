@@ -1,4 +1,4 @@
-import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Button, Card, Checkbox, Divider, FormControlLabel, FormGroup, Grid, IconButton, InputLabel, Stack, TextField, Typography } from "@mui/material";
+import { Accordion, AccordionDetails, AccordionSummary, Autocomplete, Button, Card, Checkbox, Divider, FormControlLabel, FormGroup, Grid, InputLabel, Stack, TextField, Typography } from "@mui/material";
 import { BaseFixture, StateTypes } from "../../engine/fixtures/BaseFixture";
 import { ContentCopy, Delete, ExpandMore } from "@mui/icons-material";
 import { useState } from "react";
@@ -62,7 +62,7 @@ export const FixtureCard = (props: FixtureCardProps) => {
                                     disablePortal
                                     options={dmxGroupsUnique}
                                     defaultValue={fixture.dmxGroup}
-                                    onChange={(e, value) => {
+                                    onChange={(_e, value) => {
                                         if (value) {
                                             fixture.setDMXGroup(value);
                                             reRenderHook();
