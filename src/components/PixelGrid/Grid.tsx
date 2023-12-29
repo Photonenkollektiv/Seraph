@@ -1,8 +1,8 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
-import { debounce } from 'lodash';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
+import ZoomWrapper from '../ZoomWrapper';
 
-const PIXEL_SIZE = 50;
+const PIXEL_SIZE = 20;
 
 export interface PixelData {
     color: string;
@@ -67,14 +67,20 @@ type HoverDataType = {
 
 const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData }: PixelGridProps & { setHoverData: (data: HoverDataType | undefined) => void }) => {
     return (<Stack key={`grid-container`} direction={"column"} spacing={0}>
-        <Stack key={`y-ruler`} direction={"row"} spacing={0} sx={{ marginBottom: 3, paddingLeft: 8 }}>
+        <Stack key={`y-ruler`} direction={"row"} spacing={0} sx={{ paddingLeft: 4 }}>
             {Array.from({ length: gridSizeX }, (_, x) => {
-                return (<Typography key={`y-${x}-ruler`} variant='h6' style={{ width: PIXEL_SIZE, height: 20 }}>{x}</Typography>)
+                return (<Box key={`y-${x}-ruler`} sx={{ width: PIXEL_SIZE, maxWidth: PIXEL_SIZE, height: (PIXEL_SIZE), backgroundColor: "#1f1f1f" }}>
+                    <Typography sx={{ fontSize: "8px", color: "#B2B2B2", paddingLeft: 1 }} variant='body2'>{x}</Typography>
+                </Box>)
             })}
         </Stack>
         {Array.from({ length: gridSizeY }, (_, y) => (
             <Stack key={`${y}-x-stack`} direction={"row"} spacing={0}>
-                <Typography key={`${y}-x-ruler`} variant='h6' style={{ width: 20, height: PIXEL_SIZE }} sx={{ paddingRight: 2, paddingLeft: 2 }}>{y}</Typography>
+                <Box sx={{ paddingRight: 2, paddingLeft: 1, width: (PIXEL_SIZE / 2), height: PIXEL_SIZE, backgroundColor: "#1f1f1f" }}>
+                    <Typography key={`${y}-x-ruler`} sx={{ fontSize: "8px", color: "#B2B2B2", paddingTop: 0.7 }} variant='body2' >{y}</Typography>
+
+                </Box>
+
                 {Array.from({ length: gridSizeX }, (_, x) => {
                     const color = getColorOrDefault(pixels, x, y);
                     const addressAndUniverse = getAddressAndUniverseOrNothing(pixels, x, y);
@@ -115,7 +121,7 @@ const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData }: PixelGrid
 
 const HoverOverlay = ({ hoverData }: { hoverData: HoverDataType | undefined }) => {
     return (<>
-        {hoverData ? <Paper sx={{ position: "absolute", top: hoverData.top, left: hoverData.left,padding: 1}}>
+        {hoverData ? <Paper sx={{ position: "absolute", top: hoverData.top, left: hoverData.left, padding: 1 }}>
             <Typography variant="overline">Universe: {hoverData.universe}</Typography>
             <br />
             <Typography variant="overline">Address: {hoverData.address}</Typography>
@@ -125,22 +131,34 @@ const HoverOverlay = ({ hoverData }: { hoverData: HoverDataType | undefined }) =
 
 const PixelGrid: React.FC<PixelGridProps> = ({ gridSizeX, gridSizeY, pixels }) => {
     const [hoverData, setHoverData] = useState<HoverDataType | undefined>();
-    const debouncedSetHoverData = useCallback(debounce((data: HoverDataType | undefined) => {
-        console.log("Setting hover data", data);
-        setHoverData(data);
-    }, 10), [hoverData]);
+    const innerDivRef = useRef<HTMLDivElement>(null);
+    const debouncedSetHoverData = useCallback((data: HoverDataType | undefined) => {
+        if (data && data.address && data.universe) {
+            console.log("Setting hover data", data);
+            setHoverData(data);
+        }
+    }, [hoverData]);
 
     return (
-        <div onMouseLeave={() => setHoverData(undefined)} style={{ backgroundColor: "#424242", overflow: "scroll", maxHeight: "96vh", height: "96vh" }}>
-            <Box sx={{
-                width: PIXEL_SIZE * gridSizeX + 20,
-                height: PIXEL_SIZE * gridSizeY + 20,
-                backgroundColor: "#424242",
-            }}>
-                <PixelsForGrid setHoverData={debouncedSetHoverData} gridSizeX={gridSizeX} gridSizeY={gridSizeY} pixels={pixels} />
-            </Box>
-            <HoverOverlay hoverData={hoverData} />
-        </div >
+        <>
+            <div ref={innerDivRef} id="scroll-box" onMouseLeave={() => setHoverData(undefined)} style={{ backgroundColor: "#424242", overflow: "scroll", maxHeight: "94vh", height: "94vh" }}>
+                <Box sx={{
+                    width: PIXEL_SIZE * gridSizeX + 20,
+                    height: PIXEL_SIZE * gridSizeY + 20,
+                    backgroundColor: "#424242",
+                }}>
+                    <ZoomWrapper innerDivRef={innerDivRef}>
+                        <PixelsForGrid setHoverData={debouncedSetHoverData} gridSizeX={gridSizeX} gridSizeY={gridSizeY} pixels={pixels} />
+                    </ZoomWrapper>
+                </Box>
+                <HoverOverlay hoverData={hoverData} />
+            </div >
+            <Paper sx={{ position: "absolute", bottom: "3%", right: "1%", padding: 1, opacity: 0.4 }} elevation={4}>
+                <Typography variant="overline">Right-click: Move grid</Typography>
+                <br />
+                <Typography variant="overline">CTRL+Scroll: Zoom</Typography>
+            </Paper>
+        </>
     )
 };
 

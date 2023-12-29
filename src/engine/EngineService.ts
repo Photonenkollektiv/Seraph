@@ -36,13 +36,25 @@ export const getPixelMapWithAddresses = (fixtures: BaseFixture[]): PixelMapItemW
 
     Object.keys(dmxGroups).forEach((dmxGroup) => {
         const fixtures = dmxGroups[dmxGroup];
-        fixtures.sort((a, b) => a.dmxGroupOrder - b.dmxGroupOrder).forEach((fixture) => {
-            const pixelMap = fixture.getPixelMapWithAdresses(dmxStartUniverse, dmxStartAddress);
+        fixtures.sort((a, b) => a.dmxGroupOrder - b.dmxGroupOrder).forEach((fixture, idx) => {
+            const pixelMap = fixture.getPixelMapWithAdresses(dmxStartUniverse, dmxStartAddress, idx + 1);
             pixelMaps.push(...pixelMap);
             dmxStartAddress += pixelMap.length * 3;
         })
+        dmxStartAddress = 1;
         dmxStartUniverse++;
     })
 
     return pixelMaps;
+}
+
+
+export const generateMadrixCSVFromFixtures = (fixtures: BaseFixture[]): string => {
+    const pixelMaps = getPixelMapWithAddresses(fixtures);
+    const headline = "Universe;Address;FixtureName;PixelIdx;X;Y";
+    const csvData = pixelMaps.map((pixel) => {
+        const { universe, address, originInstanceName, pixelIdx, x, y } = pixel;
+        return `${universe};${address};${originInstanceName};${pixelIdx};${x};${y}`
+    }).join("\n");
+    return `${headline}\n${csvData}`;
 }

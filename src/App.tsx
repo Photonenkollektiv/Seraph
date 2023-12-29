@@ -7,12 +7,12 @@ import { Editor } from './components/Editor';
 import { theme } from './utils/Theme';
 
 function App() {
-  
+
   return (
     <Box>
       <ThemeProvider theme={theme}>
         <Editor />
-        
+
       </ThemeProvider>
     </Box>
   )

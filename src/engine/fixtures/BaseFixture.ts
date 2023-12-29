@@ -13,11 +13,13 @@ export type PixelMapItem = {
 }
 
 export type PixelMapItemWithAddressing = {
-    x: number;
-    y: number;
     universe: number;
     address: number;
-}
+    originInstanceName: string;
+    pixelIdx: string;
+    x: number;
+    y: number;
+};
 
 export type StateTypes = string | number | boolean
 
@@ -49,8 +51,8 @@ export abstract class BaseFixture {
     public abstract setStateForKey: (key: string, data: StateTypes) => void;
     public abstract getPixelMap: () => PixelMapItem[];
     public abstract clone: () => BaseFixture;
-
-    public getPixelMapWithAdresses = (universe: number, startAddress: number): PixelMapItemWithAddressing[] => {
+    public abstract toJSON: () => string | object;
+    public getPixelMapWithAdresses = (universe: number, startAddress: number, renderingOverallOrder?: number): PixelMapItemWithAddressing[] => {
         const points = this.getPixelMap();
         return points.map((point, index) => {
             const address = startAddress + (index * 3);
@@ -62,7 +64,9 @@ export abstract class BaseFixture {
                 ...point,
                 universe: universe + universeNumber,
                 address: universeAddress,
-            }
+                originInstanceName: this.instanceName,
+                pixelIdx: `${renderingOverallOrder && renderingOverallOrder + "-"}${index}`,
+            } satisfies PixelMapItemWithAddressing;
         });
     }
     public setDMXGroup = (group: string) => {

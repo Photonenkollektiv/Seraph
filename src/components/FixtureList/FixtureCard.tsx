@@ -14,6 +14,7 @@ export type FixtureCardProps = {
 export const FixtureCard = (props: FixtureCardProps) => {
     const { fixture, reRenderHook, dmxGroupsUnique, copyFixture, deleteFixture } = props;
     const [fixtureName, setFixtureName] = useState<string>(fixture.instanceName);
+    const [dmxGroup, setDMXGroup] = useState<string>(fixture.dmxGroup);
     const onDataPointChange = (key: string, value: StateTypes) => {
         fixture.setStateForKey(key, value);
         reRenderHook();
@@ -61,10 +62,12 @@ export const FixtureCard = (props: FixtureCardProps) => {
                                 <Autocomplete
                                     disablePortal
                                     options={dmxGroupsUnique}
-                                    defaultValue={fixture.dmxGroup}
+                                    freeSolo
+                                    value={dmxGroup}
                                     onChange={(_e, value) => {
                                         if (value) {
                                             fixture.setDMXGroup(value);
+                                            setDMXGroup(value);
                                             reRenderHook();
                                         }
                                     }}

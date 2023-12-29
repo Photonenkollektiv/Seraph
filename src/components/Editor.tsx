@@ -1,19 +1,29 @@
-import { AppBar, Box, Button, Grid, Toolbar, Typography } from "@mui/material"
+import { AppBar, Box, Button, Grid, Paper, Stack, TextField, Typography } from "@mui/material"
 import PixelGrid, { PixelData } from "./PixelGrid/Grid"
 import { BaseFixture } from "../engine/fixtures/BaseFixture";
 import { useEffect, useState } from "react";
 import { FixtureList } from "./FixtureList";
 import { LineFixture } from "../engine/fixtures/LineFixture";
 import * as _ from "lodash";
-import { getPixelMapWithAddresses, pixelMapsToArray } from "../engine/EngineService";
+import { generateMadrixCSVFromFixtures, getPixelMapWithAddresses, pixelMapsToArray } from "../engine/EngineService";
 const gridSizeX = 200;
 const gridSizeY = 200;
+
+type GridSizeInfo = {
+    gridSizeX: number;
+    gridSizeY: number;
+}
 
 export const Editor = () => {
 
     const [fixtures, setFixtures] = useState<BaseFixture[]>([
         new LineFixture("1")
     ]);
+
+    const [gridSize, setGridSize] = useState<GridSizeInfo>({
+        gridSizeX,
+        gridSizeY
+    });
 
     const [pixelData, setPixelData] = useState<PixelData[][]>([]);
 
@@ -28,8 +38,8 @@ export const Editor = () => {
             const pixelMaps = getPixelMapWithAddresses(fixtures);
             const pixelData = pixelMapsToArray({
                 pixelMaps,
-                gridSizeX,
-                gridSizeY
+                gridSizeX: gridSize.gridSizeX,
+                gridSizeY: gridSize.gridSizeY
             });
             console.log("Calculated Array: ", pixelData);
             console.groupEnd();
@@ -66,18 +76,70 @@ export const Editor = () => {
         reRenderHook();
     }
 
+    const generateAndDownloadCSV = () => {
+        const csv = generateMadrixCSVFromFixtures(fixtures);
+
+        const element = document.createElement("a");
+        const file = new Blob([csv], { type: 'text/csv' });
+        element.href = URL.createObjectURL(file);
+        element.download = "export.csv";
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+
+        setTimeout(() => {
+            document.body.removeChild(element);
+        }, 100);
+    }
+
     return (
         <Box>
             <AppBar position="static">
-                <Toolbar variant="dense">
-                    <Typography variant="h6" color="inherit" component="div">
+                {/* <Toolbar variant="dense"> */}
+                <Stack direction="row" sx={{ paddingLeft: 2, marginRight: 3 }} justifyContent={"space-between"}>
+                    <Typography variant="h6" color="inherit" component="div" sx={{ paddingTop: 2 }}>
                         Seraph
                     </Typography>
-                </Toolbar>
+                    <Stack sx={{ paddingTop: 1, marginBottom: 1 }} direction={"row"} spacing={2}>
+                        <TextField
+                            size="small"
+                            label="Grid Size X"
+                            variant="standard"
+                            onChange={(e) => {
+                                setGridSize((gridSize) => {
+                                    return {
+                                        ...gridSize,
+                                        gridSizeX: parseInt(e.target.value)
+                                    }
+                                })
+                            }}
+                            value={gridSize.gridSizeX}
+                            type="number"
+                            fullWidth
+                        />
+                        <TextField
+                            size="small"
+                            label="Grid Size Y"
+                            variant="standard"
+                            onChange={(e) => {
+                                setGridSize((gridSize) => {
+                                    return {
+                                        ...gridSize,
+                                        gridSizeY: parseInt(e.target.value)
+                                    }
+                                })
+                            }}
+                            value={gridSize.gridSizeY}
+                            type="number"
+                            fullWidth
+                        />
+                        <Button sx={{ width: "10vw" }} onClick={() => generateAndDownloadCSV()}>Export CSV</Button>
+                    </Stack>
+                </Stack>
+                {/* </Toolbar> */}
             </AppBar>
             <Grid container>
                 <Grid sx={{
-                    maxHeight: "96vh", height: "96vh", overflowY: "scroll"
+                    maxHeight: "94vh", height: "94vh", overflowY: "scroll"
                 }} item xs={4}>
                     <Typography variant="h6">
                         <Box sx={{ paddingLeft: 2, paddingTop: 1 }}>
@@ -87,9 +149,10 @@ export const Editor = () => {
                     </Typography>
                 </Grid>
                 <Grid item xs={8}>
-                    <Typography variant="h6" color="inherit">
-                        <PixelGrid gridSizeX={gridSizeX} gridSizeY={gridSizeY} pixels={pixelData} />
-                    </Typography>
+                    {/* <Typography variant="h6" color="inherit"> */}
+                    <PixelGrid gridSizeX={gridSize.gridSizeX} gridSizeY={gridSize.gridSizeY} pixels={pixelData} />
+
+                    {/* </Typography> */}
                 </Grid>
             </Grid>
         </Box>

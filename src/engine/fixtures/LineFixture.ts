@@ -90,4 +90,15 @@ export class LineFixture extends BaseFixture implements BaseFixture {
         newFixture.dmxGroupOrder = this.dmxGroupOrder + 1;
         return newFixture;
     }
+
+    public toJSON = (): object => {
+        const objectForJson = {
+            type: "LineFixture",
+            instanceName: this.instanceName,
+            dmxGroup: this.dmxGroup,
+            dmxGroupOrder: this.dmxGroupOrder,
+            state: this.state,
+        }
+        return objectForJson;
+    }
 }
