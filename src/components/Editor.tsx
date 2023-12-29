@@ -5,31 +5,27 @@ import { useEffect, useState } from "react";
 import { FixtureList } from "./FixtureList";
 import { LineFixture } from "../engine/fixtures/LineFixture";
 import * as _ from "lodash";
-import { pixelMapsToArray } from "../engine/EngineService";
+import { getPixelMapWithAddresses, pixelMapsToArray } from "../engine/EngineService";
 const gridSizeX = 200;
 const gridSizeY = 200;
-
-const pixels: PixelData[][] = Array.from({ length: gridSizeY }, () =>
-    Array.from({ length: gridSizeX }, () => ({
-        color: Math.random() > 0.5 ? '#000000' : '#FFFFFF', // Example: Random black or white color
-    }))
-);
 
 export const Editor = () => {
 
     const [fixtures, setFixtures] = useState<BaseFixture[]>([
-        new LineFixture()
+        new LineFixture("1")
     ]);
 
     const [pixelData, setPixelData] = useState<PixelData[][]>([]);
+
+    const dmxGroupsUnique = [...new Set(fixtures.map((fixture) => {
+        return fixture.dmxGroup;
+    }))];
 
     const reRenderHook = _.debounce(() => {
         try {
             console.group("2D Map Calculation")
             console.log("Fixtures to use:", fixtures);
-            const pixelMaps = fixtures.flatMap((fixture) => {
-                return fixture.getPixelMap();
-            });
+            const pixelMaps = getPixelMapWithAddresses(fixtures);
             const pixelData = pixelMapsToArray({
                 pixelMaps,
                 gridSizeX,
@@ -49,7 +45,23 @@ export const Editor = () => {
 
     const addNewFixture = () => {
         setFixtures((fixtures) => {
-            return [...fixtures, new LineFixture()];
+            return [...fixtures, new LineFixture(`${fixtures.length + 1}`)];
+        });
+        reRenderHook();
+    }
+
+    const deleteFixture = (fixture: BaseFixture) => {
+        setFixtures((fixtures) => {
+            return fixtures.filter((f) => {
+                return f.instanceUUID !== fixture.instanceUUID;
+            });
+        });
+        reRenderHook();
+    }
+
+    const copyFixture = (fixture: BaseFixture) => {
+        setFixtures((fixtures) => {
+            return [...fixtures, fixture.clone()];
         });
         reRenderHook();
     }
@@ -64,12 +76,14 @@ export const Editor = () => {
                 </Toolbar>
             </AppBar>
             <Grid container>
-                <Grid item xs={4}>
+                <Grid sx={{
+                    maxHeight: "96vh", height: "96vh", overflowY: "scroll"
+                }} item xs={4}>
                     <Typography variant="h6">
-                        <Box sx={{ paddingLeft: 2,paddingTop:1 }}>
+                        <Box sx={{ paddingLeft: 2, paddingTop: 1 }}>
                             <Button onClick={() => addNewFixture()}>Add new Fixture</Button>
                         </Box>
-                        <FixtureList reRenderHook={reRenderHook} fixtures={fixtures} />
+                        <FixtureList copyFixture={copyFixture} deleteFixture={deleteFixture} dmxGroupsUnique={dmxGroupsUnique} reRenderHook={reRenderHook} fixtures={fixtures} />
                     </Typography>
                 </Grid>
                 <Grid item xs={8}>

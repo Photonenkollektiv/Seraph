@@ -4,15 +4,18 @@ import { FixtureCard } from "./FixtureList/FixtureCard";
 
 export type FixtureListProps = {
     fixtures: BaseFixture[]
-    reRenderHook: () => void
+    reRenderHook: () => void,
+    dmxGroupsUnique: string[],
+    copyFixture: (fixture: BaseFixture) => void,
+    deleteFixture: (fixture: BaseFixture) => void
 }
 
 export const FixtureList = (props: FixtureListProps) => {
-    const { fixtures, reRenderHook } = props;
+    const { fixtures, reRenderHook, dmxGroupsUnique, copyFixture, deleteFixture } = props;
     return (
         <Box sx={{ paddingLeft: 2, marginRight: 2, paddingTop: 2 }}>
             {fixtures.map((fixture) => (
-                <FixtureCard key={fixture.instanceName} reRenderHook={reRenderHook} fixture={fixture} />
+                <FixtureCard copyFixture={copyFixture} deleteFixture={deleteFixture} dmxGroupsUnique={dmxGroupsUnique} key={fixture.instanceName} reRenderHook={reRenderHook} fixture={fixture} />
             ))}
         </Box>
     )
