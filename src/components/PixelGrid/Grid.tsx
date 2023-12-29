@@ -128,7 +128,7 @@ const PixelGrid: React.FC<PixelGridProps> = ({ gridSizeX, gridSizeY, pixels }) =
     const debouncedSetHoverData = useCallback(debounce((data: HoverDataType | undefined) => {
         console.log("Setting hover data", data);
         setHoverData(data);
-    }, 10), [setHoverData]);
+    }, 10), [hoverData]);
 
     return (
         <div onMouseLeave={() => setHoverData(undefined)} style={{ backgroundColor: "#424242", overflow: "scroll", maxHeight: "96vh", height: "96vh" }}>
