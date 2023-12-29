@@ -27,26 +27,22 @@ const ZoomWrapper: React.FC<ZoomableDivProps> = ({ children, innerDivRef }) => {
         // Check if the right mouse button is pressed
         if (e.button === 2) {
             e.preventDefault();
-            console.log("Mouse down")
             setDragging(true);
             dragStart.current = { x: e.clientX, y: e.clientY };
         }
     };
 
     const handleMouseUp = () => {
-        console.log("Mouse up")
         setDragging(false);
     };
 
     const handleMouseMove = (e: MouseEvent) => {
         if (dragging && innerDivRef.current) {
-            console.log("Mouse move")
             const dx = e.clientX - dragStart.current.x;
             const dy = e.clientY - dragStart.current.y;
             dragStart.current = { x: e.clientX, y: e.clientY };
             innerDivRef.current.scrollLeft -= dx / zoomLevel;
             innerDivRef.current.scrollTop -= dy / zoomLevel;
-            console.log("Scroll left", innerDivRef.current.scrollLeft, dx, dy, zoomLevel)
         }
     };
 

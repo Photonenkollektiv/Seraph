@@ -1,3 +1,4 @@
+import { z } from "zod";
 import { BaseFixture, UIElement } from "./BaseFixture";
 
 interface Point {
@@ -100,5 +101,29 @@ export class LineFixture extends BaseFixture implements BaseFixture {
             state: this.state,
         }
         return objectForJson;
+    }
+
+    public static fromJSON = (jsonFixture: unknown): LineFixture => {
+        const savedLineFixtureSchema = z.object({
+            type: z.literal("LineFixture"),
+            instanceName: z.string(),
+            dmxGroup: z.string(),
+            dmxGroupOrder: z.number(),
+            state: z.object({
+                x1: z.number(),
+                y1: z.number(),
+                angle: z.number(),
+                length: z.number(),
+            })
+        })
+
+        const { instanceName, dmxGroup, dmxGroupOrder, state } = savedLineFixtureSchema.parse(jsonFixture);
+        const lineFixture = new LineFixture();
+        lineFixture.instanceName = instanceName;
+        lineFixture.dmxGroup = dmxGroup;
+        lineFixture.dmxGroupOrder = dmxGroupOrder;
+        lineFixture.state = state;
+        return lineFixture;
+
     }
 }

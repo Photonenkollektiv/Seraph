@@ -1,5 +1,7 @@
+import { z } from "zod";
 import { PixelData } from "../components/PixelGrid/Grid";
 import { BaseFixture, PixelMapItemWithAddressing } from "./fixtures/BaseFixture";
+import { LineFixture } from "./fixtures/LineFixture";
 
 export type pixelMapsToArrayProps = {
     pixelMaps: PixelMapItemWithAddressing[];
@@ -57,4 +59,22 @@ export const generateMadrixCSVFromFixtures = (fixtures: BaseFixture[]): string =
         return `${universe};${address};${originInstanceName};${pixelIdx};${x};${y}`
     }).join("\n");
     return `${headline}\n${csvData}`;
+}
+
+const savedFixtureSchema = z.object({
+    type: z.enum(["LineFixture"]),
+})
+
+export const unpackFixtureFromJSON = (jsonFixtures: unknown[]): BaseFixture[] => {
+    const unpackedFixtures = jsonFixtures.map((jsonFixture) => {
+        const type = savedFixtureSchema.parse(jsonFixture).type;
+        switch (type) {
+            case "LineFixture":
+                return LineFixture.fromJSON(jsonFixture);
+            default:
+                throw new Error(`Unknown type ${type}`);
+        }
+    });
+
+    return unpackedFixtures;
 }

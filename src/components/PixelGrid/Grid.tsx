@@ -134,7 +134,6 @@ const PixelGrid: React.FC<PixelGridProps> = ({ gridSizeX, gridSizeY, pixels }) =
     const innerDivRef = useRef<HTMLDivElement>(null);
     const debouncedSetHoverData = useCallback((data: HoverDataType | undefined) => {
         if (data && data.address && data.universe) {
-            console.log("Setting hover data", data);
             setHoverData(data);
         }
     }, [hoverData]);
