@@ -9,6 +9,7 @@ export type FixtureCardProps = {
     dmxGroupsUnique: string[],
     copyFixture: (fixture: BaseFixture) => void,
     deleteFixture: (fixture: BaseFixture) => void
+    createFixture: (fixture: BaseFixture) => void
 }
 
 export const FixtureCard = (props: FixtureCardProps) => {

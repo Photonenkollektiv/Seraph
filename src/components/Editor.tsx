@@ -63,7 +63,6 @@ export const Editor = () => {
         setFixtures((fixtures) => {
             return [...fixtures, new LineFixture(`${fixtures.length + 1}`)];
         });
-        reRenderHook();
     }
 
     const deleteFixture = (fixture: BaseFixture) => {
@@ -72,14 +71,12 @@ export const Editor = () => {
                 return f.instanceUUID !== fixture.instanceUUID;
             });
         });
-        reRenderHook();
     }
 
     const copyFixture = (fixture: BaseFixture) => {
         setFixtures((fixtures) => {
             return [...fixtures, fixture.clone()];
         });
-        reRenderHook();
     }
 
     const generateAndDownloadCSV = () => {
@@ -145,6 +142,12 @@ export const Editor = () => {
         element.click();
     }
 
+    const createFixture = (fixture: BaseFixture) => {
+        setFixtures((fixtures) => {
+            return [...fixtures, fixture];
+        });
+    }
+
     return (
         <Box>
             <AppBar position="static">
@@ -194,7 +197,7 @@ export const Editor = () => {
             <Grid container>
                 <Grid sx={{
                     maxHeight: "94vh", height: "94vh", overflowY: "scroll"
-                }} item xs={4}>
+                }} item xs={2}>
                     <Typography variant="h6">
                         <Box sx={{ paddingLeft: 2, paddingTop: 1, marginRight: 2 }}>
                             <Stack direction="row" spacing={2} justifyContent={"space-between"}>
@@ -205,12 +208,12 @@ export const Editor = () => {
                                 </Stack>
                             </Stack>
                         </Box>
-                        <FixtureList copyFixture={copyFixture} deleteFixture={deleteFixture} dmxGroupsUnique={dmxGroupsUnique} reRenderHook={reRenderHook} fixtures={fixtures} />
+                        <FixtureList createFixture={createFixture} copyFixture={copyFixture} deleteFixture={deleteFixture} dmxGroupsUnique={dmxGroupsUnique} reRenderHook={reRenderHook} fixtures={fixtures} />
                     </Typography>
                 </Grid>
-                <Grid item xs={8}>
+                <Grid item xs={10}>
                     {/* <Typography variant="h6" color="inherit"> */}
-                    <PixelGrid gridSizeX={gridSize.gridSizeX} gridSizeY={gridSize.gridSizeY} pixels={pixelData} />
+                    <PixelGrid createFixture={createFixture} gridSizeX={gridSize.gridSizeX} gridSizeY={gridSize.gridSizeY} pixels={pixelData} />
 
                     {/* </Typography> */}
                 </Grid>

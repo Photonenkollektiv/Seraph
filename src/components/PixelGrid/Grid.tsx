@@ -1,6 +1,8 @@
 import { Box, Paper, Stack, Typography } from '@mui/material';
 import React, { useCallback, useRef, useState } from 'react';
 import ZoomWrapper from '../ZoomWrapper';
+import { BaseFixture } from '../../engine/fixtures/BaseFixture';
+import { LineFixture } from '../../engine/fixtures/LineFixture';
 
 const PIXEL_SIZE = 20;
 
@@ -14,6 +16,7 @@ export interface PixelGridProps {
     gridSizeX: number;
     gridSizeY: number;
     pixels: (PixelData | undefined)[][];
+    createFixture: (fixture: BaseFixture) => void;
 }
 
 const getColorOrDefault = (pixelData: (PixelData | undefined)[][], x: number, y: number) => {
@@ -65,7 +68,7 @@ type HoverDataType = {
     left: number;
 }
 
-const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData }: PixelGridProps & { setHoverData: (data: HoverDataType | undefined) => void }) => {
+const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData, createFixture }: PixelGridProps & { setHoverData: (data: HoverDataType | undefined) => void }) => {
     return (<Stack key={`grid-container`} direction={"column"} spacing={0}>
         <Stack key={`y-ruler`} direction={"row"} spacing={0} sx={{ paddingLeft: 4 }}>
             {Array.from({ length: gridSizeX }, (_, x) => {
@@ -87,6 +90,16 @@ const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData }: PixelGrid
                     return (
                         // <Tooltip title={`${addressAndUniverse}`}>
                         <div
+                            onClick={(e) => {
+                                const isAltPressed = e.altKey;
+                                if (isAltPressed) {
+                                    const newFixture = new LineFixture();
+                                    newFixture.setStateForKey("x1", x);
+                                    newFixture.setStateForKey("y1", y);
+                                    newFixture.instanceName = `Line (${x},${y})`;
+                                    createFixture(newFixture);
+                                }
+                            }}
                             key={`${x}-${y}-item`}
                             onMouseOver={(e) => {
                                 if (!addressAndUniverse || addressAndUniverse === "") {
@@ -129,7 +142,7 @@ const HoverOverlay = ({ hoverData }: { hoverData: HoverDataType | undefined }) =
     </>)
 }
 
-const PixelGrid: React.FC<PixelGridProps> = ({ gridSizeX, gridSizeY, pixels }) => {
+const PixelGrid: React.FC<PixelGridProps> = ({ gridSizeX, gridSizeY, pixels, createFixture }) => {
     const [hoverData, setHoverData] = useState<HoverDataType | undefined>();
     const innerDivRef = useRef<HTMLDivElement>(null);
     const debouncedSetHoverData = useCallback((data: HoverDataType | undefined) => {
@@ -147,13 +160,15 @@ const PixelGrid: React.FC<PixelGridProps> = ({ gridSizeX, gridSizeY, pixels }) =
                     backgroundColor: "#424242",
                 }}>
                     <ZoomWrapper innerDivRef={innerDivRef}>
-                        <PixelsForGrid setHoverData={debouncedSetHoverData} gridSizeX={gridSizeX} gridSizeY={gridSizeY} pixels={pixels} />
+                        <PixelsForGrid createFixture={createFixture} setHoverData={debouncedSetHoverData} gridSizeX={gridSizeX} gridSizeY={gridSizeY} pixels={pixels} />
                     </ZoomWrapper>
                 </Box>
                 <HoverOverlay hoverData={hoverData} />
             </div >
             <Paper sx={{ position: "absolute", bottom: "3%", right: "1%", padding: 1, opacity: 0.4 }} elevation={4}>
                 <Typography variant="overline">Right-click: Move grid</Typography>
+                <br />
+                <Typography variant="overline">ALT+Click: Create fixture at pos</Typography>
                 <br />
                 <Typography variant="overline">CTRL+Scroll: Zoom</Typography>
             </Paper>
