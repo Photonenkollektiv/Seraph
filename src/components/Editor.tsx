@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
 import { FixtureList } from "./FixtureList";
 import { LineFixture } from "../engine/fixtures/LineFixture";
 import * as _ from "lodash";
-import { generateMadrixCSVFromFixtures, getPixelMapWithAddresses, pixelMapsToArray, unpackFixtureFromJSON } from "../engine/EngineService";
+import { generateMadrixCSVFromFixtures, generateMagicQCSVFromFixtures, getPixelMapWithAddresses, pixelMapsToArray, unpackFixtureFromJSON } from "../engine/EngineService";
 import { useSnackbar } from "notistack";
 const gridSizeX = 200;
 const gridSizeY = 200;
@@ -86,6 +86,21 @@ export const Editor = () => {
         const file = new Blob([csv], { type: 'text/csv' });
         element.href = URL.createObjectURL(file);
         element.download = "export.csv";
+        document.body.appendChild(element); // Required for this to work in FireFox
+        element.click();
+
+        setTimeout(() => {
+            document.body.removeChild(element);
+        }, 100);
+    }
+
+    const generateAndDownloadMagicQCSV = () => {
+        const csv = generateMagicQCSVFromFixtures(fixtures,gridSize.gridSizeX,gridSize.gridSizeY);
+
+        const element = document.createElement("a");
+        const file = new Blob([csv], { type: 'text/csv' });
+        element.href = URL.createObjectURL(file);
+        element.download = "grid1.csv";
         document.body.appendChild(element); // Required for this to work in FireFox
         element.click();
 
@@ -189,7 +204,8 @@ export const Editor = () => {
                             type="number"
                             fullWidth
                         />
-                        <Button sx={{ width: "10vw" }} onClick={() => generateAndDownloadCSV()}>Export CSV</Button>
+                        <Button sx={{ width: "10vw" }} onClick={() => generateAndDownloadCSV()}>Export MADRIX</Button>
+                        <Button sx={{ width: "10vw" }} onClick={() => generateAndDownloadMagicQCSV()}>Export MagicQ</Button>
                     </Stack>
                 </Stack>
                 {/* </Toolbar> */}

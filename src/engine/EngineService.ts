@@ -61,6 +61,38 @@ export const generateMadrixCSVFromFixtures = (fixtures: BaseFixture[]): string =
     return `${headline}\n${csvData}`;
 }
 
+function createZeroMatrix(x: number, y: number): number[][] {
+    // Initialize an empty array
+    let matrix: number[][] = [];
+    
+    // Loop over the number of rows (x)
+    for (let i = 0; i < x; i++) {
+        // Create a new row filled with zeros
+        let row: number[] = [];
+        for (let j = 0; j < y; j++) {
+            row.push(0);
+        }
+        // Add the row to the matrix
+        matrix.push(row);
+    }
+
+    return matrix;
+}
+
+export const generateMagicQCSVFromFixtures = (fixtures: BaseFixture[],gridSizeX:number,gridSizeY:number): string => {
+    const pixelMaps = getPixelMapWithAddresses(fixtures);
+    
+    const gridArray = createZeroMatrix(gridSizeX,gridSizeY);
+    let pixelId = 1;
+    for(const pixel of pixelMaps){
+        const { x, y } = pixel;
+        gridArray[x][y] = pixelId;
+        pixelId++;
+    }
+    const csvData = gridArray.map(row => row.join(",")).join("\n");
+    return `${csvData}`;
+}
+
 const savedFixtureSchema = z.object({
     type: z.enum(["LineFixture"]),
 })
