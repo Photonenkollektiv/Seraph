@@ -66,6 +66,8 @@ type HoverDataType = {
     universe: number;
     top: number;
     left: number;
+    pixelX: number;
+    pixelY: number;
 }
 
 const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData, createFixture }: PixelGridProps & { setHoverData: (data: HoverDataType | undefined) => void }) => {
@@ -108,14 +110,16 @@ const PixelsForGrid = ({ gridSizeX, gridSizeY, pixels, setHoverData, createFixtu
                                 }
                                 // get position of current pixel
                                 const rect = e.currentTarget.getBoundingClientRect();
-                                const x = rect.left + window.scrollX;
-                                const y = rect.top + window.scrollY;
+                                const posX = rect.left + window.scrollX;
+                                const posY = rect.top + window.scrollY;
 
                                 setHoverData({
                                     address: parseInt(addressAndUniverse.split("@")[1]),
                                     universe: parseInt(addressAndUniverse.split("@")[0]),
-                                    top: y + (PIXEL_SIZE * 0.75),
-                                    left: x + (PIXEL_SIZE * 0.75)
+                                    top: posY + (PIXEL_SIZE * 0.75),
+                                    left: posX + (PIXEL_SIZE * 0.75),
+                                    pixelX: x,
+                                    pixelY:y,
                                 })
                             }}
                             style={{
@@ -138,6 +142,8 @@ const HoverOverlay = ({ hoverData }: { hoverData: HoverDataType | undefined }) =
             <Typography variant="overline">Universe: {hoverData.universe}</Typography>
             <br />
             <Typography variant="overline">Address: {hoverData.address}</Typography>
+            <br />
+            <Typography variant="overline">{hoverData.pixelX}/{hoverData.pixelY}</Typography>
         </Paper> : null}
     </>)
 }
