@@ -86,7 +86,7 @@ export const generateMagicQCSVFromFixtures = (fixtures: BaseFixture[],gridSizeX:
     let pixelId = 1;
     for(const pixel of pixelMaps){
         const { x, y } = pixel;
-        gridArray[x][y] = pixelId;
+        gridArray[y][x] = pixelId;
         pixelId++;
     }
     const csvData = gridArray.map(row => row.join(",")).join("\n");

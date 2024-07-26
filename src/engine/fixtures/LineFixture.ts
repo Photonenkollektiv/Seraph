@@ -67,11 +67,19 @@ export class LineFixture extends BaseFixture implements BaseFixture {
         type: "number",
         fieldLabel: "Length",
         fieldStateName: "length",
+    },{
+        type: "boolean",
+        fieldLabel: "Reverse",
+        fieldStateName: "reverse",
     }] satisfies UIElement[]);
 
     public getStateData = () => this.state;
 
     public setStateForKey = (key: string, data: string | number | boolean) => {
+        if(key === "reverse"){
+            this.reverse = data as boolean;
+            return;
+        }
         if (!Object.keys(this.state).includes(key)) throw new Error(`Key ${key} does not exist in state`);
         // @ts-expect-error wtf
         this.state[key] = data;

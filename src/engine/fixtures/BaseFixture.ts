@@ -39,7 +39,7 @@ export abstract class BaseFixture {
     public instanceName: string = "";
     public dmxGroup: string = "Default";
     public dmxGroupOrder: number = 0;
-
+    public reverse: boolean = false;
     public constructor(instanceName?: string) {
         this.instanceUUID = generateUUID();
         if (instanceName)
@@ -53,7 +53,11 @@ export abstract class BaseFixture {
     public abstract clone: () => BaseFixture;
     public abstract toJSON: () => string | object;
     public getPixelMapWithAdresses = (universe: number, startAddress: number, renderingOverallOrder?: number): PixelMapItemWithAddressing[] => {
-        const points = this.getPixelMap();
+        let points = this.getPixelMap();
+        if(this.reverse){
+            points = points.reverse()
+            console.log("Reversed array", points)
+        }
         return points.map((point, index) => {
             const address = startAddress + (index * 3);
             const universeSize = 170 * 3; // 170 pixels, each pixel needs 3 addresses
