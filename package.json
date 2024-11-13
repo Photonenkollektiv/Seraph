@@ -19,6 +19,7 @@
     "clsx": "^2.1.1",
     "cmdk-solid": "^1.1.0",
     "embla-carousel-solid": "^8.3.1",
+    "solid-icons": "^1.1.0",
     "solid-js": "^1.8.7",
     "solid-sonner": "^0.2.8",
     "tailwind-merge": "^2.5.4",
