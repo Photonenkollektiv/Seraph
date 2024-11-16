@@ -74,11 +74,19 @@ class LEDStrip extends BaseFixture {
         });
     }
 
+    public getPosition(): THREE.Vector3 {
+        return this.startPosition;
+    }
+
     public changeRotation(rotation: THREE.Euler): void {
         this.direction = rotation;
         this.cubes.forEach((cube) => {
             cube.rotation.copy(this.direction);
         });
+    }
+
+    public getRotation(): THREE.Euler {
+        return this.direction;
     }
 
     public changePixelCount(pixelCount: number): void {
@@ -103,6 +111,32 @@ class LEDStrip extends BaseFixture {
 
     public destroy(): void {
         this.clearLEDStrip();
+    }
+
+    public getBorderMesh(): THREE.Mesh {
+
+        const meshStartPositon = new THREE.Vector3(
+            this.startPosition.x - 0.01,
+            this.startPosition.y - 0.01,
+            this.startPosition.z - 0.01
+        );
+        const endMeshElement = this.cubes[this.cubes.length - 1];
+        const meshEndPosition = new THREE.Vector3(
+            endMeshElement.position.x + 0.01,
+            endMeshElement.position.y + 0.01,
+            endMeshElement.position.z + 0.01
+        );
+
+        const geometry = new THREE.BoxGeometry(
+            meshEndPosition.x - meshStartPositon.x,
+            meshEndPosition.y - meshStartPositon.y,
+            meshEndPosition.z - meshStartPositon.z
+        );
+        const material = new THREE.MeshBasicMaterial({ color: 0x00ff00 });
+        const borderMesh = new THREE.Mesh(geometry, material);
+        borderMesh.position.copy(meshStartPositon);
+        return borderMesh;
+
     }
 }
 

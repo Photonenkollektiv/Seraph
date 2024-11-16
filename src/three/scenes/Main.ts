@@ -1,21 +1,23 @@
-import { AmbientLight, Color, Light, Scene, WebGLRenderer } from "three";
+import { AmbientLight, Color, Light, Mesh, PerspectiveCamera, Scene, WebGLRenderer } from "three";
 import { makeRenderer } from "../lib/generators";
 import { BPMController } from "../controllers/BpmController";
 import WorldGrid from "../generators/world/WorldGrid";
 import CameraController from "../controllers/CameraController";
+import CameraController2 from "../controllers/CameraController2";
 
 export class MainScene extends Scene {
     private renderer!: WebGLRenderer;
     private ambientLight!: Light;
     private worldGrid: WorldGrid = new WorldGrid(100, 10);
-    private cameraController: CameraController;
+    private cameraController: CameraController2;
     private bpmController = new BPMController();
-
+    private camera: PerspectiveCamera;
     constructor(uiEl: HTMLElement) {
         super();
         this.setupBasics(uiEl);
         this.setupLights();
-        this.cameraController = new CameraController(this.renderer, uiEl)
+        this.camera = new PerspectiveCamera(75, uiEl.clientWidth / uiEl.clientHeight, 0.1, 1000);
+        this.cameraController = new CameraController2(this.camera, uiEl)
         this.add(this.worldGrid.getGrid());
         requestAnimationFrame(this.animate);
         this.worldGrid.toggleVisibility(false);
@@ -45,12 +47,16 @@ export class MainScene extends Scene {
     private animate = (time: number) => {
         this.update(time)
         this.cameraController.update()
-        this.renderer.render(this, this.cameraController.getCamera());
+        this.renderer.render(this, this.camera);
         requestAnimationFrame(this.animate);
     }
 
     public mountEventListeners = () => {
-        this.cameraController.remountEventListeners();
+        // this.cameraController.remountEventListeners();
+    }
+
+    public focusOn = (object: Mesh) => {
+        this.cameraController.focusOn(object);
     }
 
 }

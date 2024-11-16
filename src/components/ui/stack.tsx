@@ -5,6 +5,8 @@ interface StackProps {
     alignItems?: "stretch" | "flex-start" | "flex-end" | "center" | "baseline";
     direction?: "row" | "row-reverse" | "column" | "column-reverse";
     children: JSX.Element | JSX.Element[];
+    style?: JSX.CSSProperties;
+    spacing?: number;
 }
 
 const Stack = (props: StackProps) => {
@@ -15,6 +17,8 @@ const Stack = (props: StackProps) => {
         "justify-content": justifyContent,
         "align-items": alignItems,
         "flex-direction": direction,
+        "gap": props.spacing ? `${props.spacing}px` : "0",
+        ...props.style,
     };
 
     return <div style={stackStyle}>{children}</div>;

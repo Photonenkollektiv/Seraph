@@ -41,7 +41,11 @@ export const Sidebar = ({ scene }: SidebarProps) => {
                         strip.destroy()
                         const newStrips = strips().filter(s => s !== strip)
                         setStrips(newStrips)
-                    }} strip={() => strip} />
+                    }}
+                    strip={() => strip}
+                    focus={() => {
+                        scene()?.focusOn(strip.getBorderMesh())
+                    }} />
                 )
             })}
         </CardContent>
