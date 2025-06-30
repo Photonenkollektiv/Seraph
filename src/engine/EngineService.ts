@@ -35,16 +35,27 @@ export const getPixelMapWithAddresses = (fixtures: BaseFixture[]): PixelMapItemW
     let dmxStartUniverse = 1;
     let dmxStartAddress = 1;
     const pixelMaps: PixelMapItemWithAddressing[] = [];
-
+    let pixelIdx = 1;
     Object.keys(dmxGroups).forEach((dmxGroup) => {
+        // console.log(`==> Starting DMX Group ${dmxGroup} with Universe ${dmxStartUniverse} and starting address ${dmxStartAddress}`);
         const fixtures = dmxGroups[dmxGroup];
         fixtures.sort((a, b) => a.dmxGroupOrder - b.dmxGroupOrder).forEach((fixture, idx) => {
             const pixelMap = fixture.getPixelMapWithAdresses(dmxStartUniverse, dmxStartAddress, idx + 1);
-            pixelMaps.push(...pixelMap);
-            dmxStartAddress += pixelMap.length * 3;
+            pixelMaps.push(...pixelMap.map((pixel) => {
+                return {
+                    ...pixel,
+                    pixelIdx: `${pixelIdx}-${pixel.pixelIdx}`,
+                }
+            }));
+            const lastPixel = pixelMap[pixelMap.length - 1];
+            dmxStartAddress = lastPixel.address + 3; // +3 because each pixel
+            dmxStartUniverse = lastPixel.universe; // +1 because each pixel is 3 bytes (RGB)
+            // console.log(`Fixture ${fixture.fixtureName} with DMX Group ${dmxGroup} has ${pixelMap.length} pixels, starting at address ${dmxStartAddress - pixelMap.length * 3} in universe ${dmxStartUniverse}`);
         })
+        // console.log(`X==> Finished DMX Group ${dmxGroup} with Universe ${dmxStartUniverse} and starting address ${dmxStartAddress - 3}`);
         dmxStartAddress = 1;
         dmxStartUniverse++;
+        pixelIdx++;
     })
 
     return pixelMaps;
@@ -64,7 +75,7 @@ export const generateMadrixCSVFromFixtures = (fixtures: BaseFixture[]): string =
 function createZeroMatrix(x: number, y: number): number[][] {
     // Initialize an empty array
     let matrix: number[][] = [];
-    
+
     // Loop over the number of rows (x)
     for (let i = 0; i < x; i++) {
         // Create a new row filled with zeros
@@ -79,12 +90,12 @@ function createZeroMatrix(x: number, y: number): number[][] {
     return matrix;
 }
 
-export const generateMagicQCSVFromFixtures = (fixtures: BaseFixture[],gridSizeX:number,gridSizeY:number): string => {
+export const generateMagicQCSVFromFixtures = (fixtures: BaseFixture[], gridSizeX: number, gridSizeY: number): string => {
     const pixelMaps = getPixelMapWithAddresses(fixtures);
-    
-    const gridArray = createZeroMatrix(gridSizeX,gridSizeY);
+
+    const gridArray = createZeroMatrix(gridSizeX, gridSizeY);
     let pixelId = 1;
-    for(const pixel of pixelMaps){
+    for (const pixel of pixelMaps) {
         const { x, y } = pixel;
         gridArray[y][x] = pixelId;
         pixelId++;
